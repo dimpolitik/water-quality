@@ -7,3 +7,5 @@ pyshp
 shapely
 descartes
 xgboost
+joblib
+imblearn
