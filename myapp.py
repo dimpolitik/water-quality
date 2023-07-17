@@ -147,9 +147,9 @@ def load_model(response):
 
 responses = ['-', 'MI_QUALITY', 'Diat_QUALITY', 'FISH_QUALITY', 'Total Quality']
 
-f = r'C:\Users\ΔΗΜΗΤΡΗΣ\Documents\Varlas_Stefanidis\dataset_clear.csv'
-f_precip = r'C:\Users\ΔΗΜΗΤΡΗΣ\Documents\Varlas_Stefanidis\precipitation_era5-land.txt'
-f_temp = r'C:\Users\ΔΗΜΗΤΡΗΣ\Documents\Varlas_Stefanidis\temperature_era5-land.txt'
+f = './dataset_clear.csv'
+f_precip = './precipitation_era5-land.txt'
+f_temp = './temperature_era5-land.txt'
      
 cs = 'classes_2'
 
