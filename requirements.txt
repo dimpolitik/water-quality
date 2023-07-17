@@ -9,3 +9,4 @@ descartes
 xgboost
 joblib
 imblearn
+seaborn
