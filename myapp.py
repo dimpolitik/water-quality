@@ -377,15 +377,15 @@ if response not in '-':
             color_dict2 = dict({'Pass': '#1f77b4',
                                'Fail': 'orange', 
                                'Fail-> Pass': 'green',
-                               'Pass-> Fail': "red"})
+                               'Pass-> Fail': 'red'})
             
             X_test['New prediction'][idx] = X_test['Before'][idx] - 2* X_test['After'][idx]
             
             X_test['New prediction'] = X_test['New prediction'].replace([0], 'Pass')
             X_test['New prediction'] = X_test['New prediction'].replace([1], 'Fail')
             X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail')
-            X_test['New prediction'] = X_test['New prediction'].replace([-2], 'Pass->Fail')
-            X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail->Pass')
+            X_test['New prediction'] = X_test['New prediction'].replace([-2], 'Pass-> Fail')
+            X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail-> Pass')
              
             sns.scatterplot(data=X_test, x='Lon', y='Lat', hue='New prediction', palette= color_dict2).set(title='Scenario')
             plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])
