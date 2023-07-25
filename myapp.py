@@ -410,6 +410,3 @@ if response not in '-':
             d2 = X_test_new_prediction[show_vars]
             
             st.dataframe(d2.head(5).set_index(d2.columns[0]))
-
-
-new_york() 
