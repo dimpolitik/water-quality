@@ -396,7 +396,8 @@ if response not in '-':
             X_test['New prediction'] = X_test['New prediction'].replace([-2], 'Pass->Fail')
             X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail->Pass')
             
-            sns.scatterplot('Lon', 'Lat', data=X_test, hue='New prediction', palette= color_dict).set(title='Scenario')
+            sns.scatterplot('Lon', 'Lat', data=X_test, hue='New prediction', palette= color_dict)
+            plt.title('Scenario')
             plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])
             
             buf = BytesIO()
