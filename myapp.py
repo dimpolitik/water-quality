@@ -225,14 +225,6 @@ st.markdown("- What if we reduce pH?")
 st.markdown("- Item 2")
 st.markdown("- Item 3")
 
-st.markdown('''
-<style>
-[data-testid="stMarkdownContainer"] ul{
-    padding-left:40px;
-}
-</style>
-''', unsafe_allow_html=True)
-
 with st.form(key ='Form1'):
     with st.sidebar:
         st.sidebar.image('urk-fishing-trawlers.jpg')
@@ -333,8 +325,7 @@ if response not in '-':
                            'Fail': 'orange', 
                                        })
         
-        # , palette= color_dict1
-        sns.scatterplot(data=X_test, x='Lon', y='Lat', hue='Prediction').set(title='Baseline')
+        sns.scatterplot(data=X_test, x='Lon', y='Lat', hue='Prediction', palette= color_dict1).set(title='Baseline')
         plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])      
 
         buf = BytesIO()
@@ -383,10 +374,10 @@ if response not in '-':
             
             idx = X_test.index[X_test['Before'] != X_test['After']]
             
-            color_dict = dict({'Pass': '#1f77b4',
+            color_dict2 = dict({'Pass': '#1f77b4',
                                'Fail': 'orange', 
-                               'Fail->Pass': 'green',
-                               'Pass->Fail': "red"})
+                               'Fail-> Pass': 'green',
+                               'Pass-> Fail': "red"})
             
             X_test['New prediction'][idx] = X_test['Before'][idx] - 2* X_test['After'][idx]
             
@@ -395,8 +386,8 @@ if response not in '-':
             X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail')
             X_test['New prediction'] = X_test['New prediction'].replace([-2], 'Pass->Fail')
             X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail->Pass')
-            # , palette= color_dict
-            sns.scatterplot(data=X_test, x='Lon', y='Lat', hue='New prediction').set(title='Scenario')
+             
+            sns.scatterplot(data=X_test, x='Lon', y='Lat', hue='New prediction', palette= color_dict2).set(title='Scenario')
             plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])
             
             buf = BytesIO()
