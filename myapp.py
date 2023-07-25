@@ -24,6 +24,9 @@ import joblib
 from sklearn.model_selection import train_test_split
 from xgboost import XGBClassifier
 import seaborn as sns
+import gmaps
+from ipywidgets import embed
+import streamlit.components.v1 as components
 
 # run app
 
@@ -145,7 +148,21 @@ def load_model(response):
     
     return xgb_model
 
-responses = ['-', 'MI_QUALITY', 'Diat_QUALITY', 'FISH_QUALITY', 'Total Quality']
+def new_york():
+    # https://discuss.streamlit.io/t/how-to-show-gmaps-object-from-google-maps-api-on-streamlit/24588/5
+    gmaps.configure(api_key='AIzaSyChoXuIdG6ZoKUA1XEGr5pdclI1ToPHE1U')
+    # Plot coordinates
+    coordinates = (23.75, 38)
+    _map = gmaps.figure(center=coordinates, zoom_level=12)
+
+    # Render map in Streamlit
+    snippet = embed.embed_snippet(views=_map)
+    html = embed.html_template.format(title="", snippet=snippet)
+    return components.html(html, height=500,width=500)
+
+responses_back = ['-', 'MI_QUALITY', 'Diat_QUALITY', 'FISH_QUALITY', 'Total Quality']
+responses = ['-', 'Macroinvertebrates', 'Diatoms', 'Fish', 'Physicochemical quality']
+
 
 f = './dataset_clear.csv'
 f_precip = './precipitation_era5-land.txt'
@@ -153,7 +170,7 @@ f_temp = './temperature_era5-land.txt'
      
 cs = 'classes_2'
 
-var = ['Season', 
+var0 = ['Season', 
             'Year',
             'WD',  # correlated
             'Conductivity',
@@ -172,14 +189,23 @@ var = ['Season',
             #'Int. Type R-M'
             ] 
 
+show_vars = ['Conductivity',
+            'Nitrite', 
+            'Nitrate',
+            'Ammonium', 
+            'TP', 
+            'Salinity', 
+            'Prec1',
+            'Temp1'
+                    ] 
+
 #meteo_vars = ['Prec1','Prec7','Prec30','MaxP7','MaxP30']
 meteo_vars = ['Prec1']
 
 #temp_vars = ['Temp1','Temp7','Temp30','MaxT1','MaxT7','MaxT30','MinT1','MinT7','MinT30']
 temp_vars = ['Temp1']
 
-variables_input = var + meteo_vars + temp_vars
-
+var = var0 + meteo_vars + temp_vars
 
 ######################### Webpage set up ############################
 st.title('What-if-scenarios for predicting the ecological status of Greek rivers')
@@ -187,10 +213,10 @@ st.markdown("In this study, we developed a series of classification models based
 
 st.markdown("The ecological status of the rivers was defined through three indices.")
 
-#st.markdown("<h1 style='text-align: center; color: white;'>My Streamlit App</h1>", unsafe_allow_html=True)
+##st.markdown("<h1 style='text-align: center; color: white;'>My Streamlit App</h1>", unsafe_allow_html=True)
 
-expander = st.expander("See workflow")
-expander.image('workflow.JPG', caption='Sunrise by the mountains')
+#expander = st.expander("See workflow")
+#expander.image('workflow.JPG', caption='Sunrise by the mountains')
 
 st.markdown(" ")
 
@@ -213,25 +239,33 @@ with st.form(key ='Form1'):
         st.sidebar.subheader("Select index")
         response = st.sidebar.selectbox("Ecological index", responses)
         
+        if response == 'Macroinvertebrates':
+            response_back = responses_back[1]
+        elif response == 'Diatoms':
+            response_back = responses_back[2]
+        elif response == 'Fish':
+            response_back = responses_back[3]
+        if response == 'Physicochemical quality':
+            response_back = responses_back[4]
+        
         if response not in '-':  
-            model = load_model(response)
-            df_tq, df_vanilla = preprocess_dataset(f, f_precip, f_temp, variables_input, response, cs)
+            model = load_model(response_back)
+            df_tq, df_vanilla = preprocess_dataset(f, f_precip, f_temp, var, response_back, cs)
             
             
-            X_train, X_test, y_train, y_test, predictors, indices_train, indices_test, X_all, y_all, df_wiz = split_dataset(df_tq, response)
+            X_train, X_test, y_train, y_test, predictors, indices_train, indices_test, X_all, y_all, df_wiz = split_dataset(df_tq, response_back)
             
             X_train_crop = X_train.drop(['Lon', 'Lat'], axis=1)
             X_test_crop = X_test.drop(['Lon', 'Lat'], axis=1)
             y_pred = model.predict(X_test_crop)
             X_test['Prediction'] = y_pred
-            
+            X_test['Before'] = y_pred
             X_test['Prediction'] = X_test['Prediction'].replace([0], 'Pass')
             X_test['Prediction'] = X_test['Prediction'].replace([1], 'Fail')
                     
-            X_test['Ground'] = y_test
-            
-            X_test['Ground'] = X_test['Ground'].replace([0], 'Pass')
-            X_test['Ground'] = X_test['Ground'].replace([1], 'Fail')
+            #X_test['Ground'] = y_test
+            #X_test['Ground'] = X_test['Ground'].replace([0], 'Pass')
+            #X_test['Ground'] = X_test['Ground'].replace([1], 'Fail')
             
             #st.sidebar.subheader("Pick a random data instance")
             # GAMATO: https://discuss.streamlit.io/t/if-syntax-error-while-attempting-to-incorporate-in-a-st-select-slider/34241/3
@@ -245,37 +279,28 @@ with st.form(key ='Form1'):
             #var_number = i
             #slider.append(st.slider(‘Change variable value:’, s_min, s_max, default_cal,
             #key=“sld_%d” % var_number ))         
-                   
+                         
+            i=3; var3 = st.slider(var[i], -100, 100, 0, 1, key='my_slider3')
+            i=4; var4 = st.slider(var[i], -100, 100, 0, 1, key='my_slider4')
+            i=5; var5 = st.slider(var[i], -100, 100, 0, 1, key='my_slider5')
+            i=6; var6 = st.slider(var[i], -100, 100, 0, 1, key='my_slider6')
+            i=7; var7 = st.slider(var[i], -100, 100, 0, 1, key='my_slider7')
+          
+            i=9; var9 = st.slider(var[i], -100, 100, 0, 1, key='my_slider9')
             
-            #i=0; var0 = st.slider(var[i], -50, 50, 0, 1, key='my_slider0')           
-            #i=1; var1 = st.slider(var[i], -50, 50, 0, 1, key='my_slider1')
-            #i=2; var2 = st.slider(var[i], -50, 50, 0, 1, key='my_slider2')
-            i=3; var3 = st.slider(var[i], -50, 50, 0, 1, key='my_slider3')
-            i=4; var4 = st.slider(var[i], -50, 50, 0, 1, key='my_slider4')
-            i=5; var5 = st.slider(var[i], -50, 50, 0, 1, key='my_slider5')
-            i=6; var6 = st.slider(var[i], -50, 50, 0, 1, key='my_slider6')
-            i=7; var7 = st.slider(var[i], -50, 50, 0, 1, key='my_slider7')
-            #i=8; var8 = st.slider(var[i], -50, 50, 0, 1, key='my_slider8')
-            i=9; var9 = st.slider(var[i], -50, 50, 0, 1, key='my_slider9')
-            #i=10; var10 = st.slider(var[i], -50, 50, 0, 1, key='my_slider10')        
-            i=11; var11 = st.slider(var[i], -50, 50, 0, 1, key='my_slider11')
-            i=12; var12 = st.slider(var[i], -50, 50, 0, 1, key='my_slider12')
-            i=13; var13 = st.slider(var[i], -50, 50, 0, 1, key='my_slider13')
-           # i=14; var14 = st.slider(var[i], 0, 100, 0, 1, key='my_slider14')
-            scenario = np.array([#st.session_state.my_slider0, 
-                                 #st.session_state.my_slider1, 
-                                 #st.session_state.my_slider2, 
+            i=14; var14 = st.slider(var[i], -100, 100, 0, 1, key='my_slider14')
+            i=15; var14 = st.slider(var[i], -100, 100, 0, 1, key='my_slider15')
+
+            scenario = np.array([
                                  st.session_state.my_slider3, 
                                  st.session_state.my_slider4, 
                                  st.session_state.my_slider5, 
                                  st.session_state.my_slider6, 
                                  st.session_state.my_slider7, 
-                                 #st.session_state.my_slider8, 
                                  st.session_state.my_slider9, 
-                                 #st.session_state.my_slider10, 
-                                 st.session_state.my_slider11, 
-                                 st.session_state.my_slider12, 
-                                 st.session_state.my_slider13]) 
+                                 st.session_state.my_slider14, 
+                                 st.session_state.my_slider15 
+                                                            ]) 
                                  #st.session_state.my_slider14])
             
             
@@ -283,73 +308,117 @@ with st.form(key ='Form1'):
        
 if response not in '-': 
     st.subheader("Baseline and Scenario")
-    col1, col2, col3 = st.columns(3)
+    
+    if response == responses[1]:
+        st.write('<p style="font-size:18px; color:red;">Most influential factors for Macroinvertebrates are ???</p>',
+                                                                 unsafe_allow_html=True)
+    elif response == responses[2]:
+        st.write('<p style="font-size:18px; color:red;">Most influential factors for Diatoms are ???</p>',
+                                                                 unsafe_allow_html=True)
+    elif response == responses[3]:
+       st.write('<p style="font-size:18px; color:red;">Most influential factors for Fish are ???</p>',
+                                                                unsafe_allow_html=True)
+    elif response == responses[4]:
+        st.write('<p style="font-size:18px; color:red;">Most influential factors for Physicochemical quality are ???</p>',
+                                                                 unsafe_allow_html=True)
+        
+    col1, col2 = st.columns(2)
     with col1:
-        st.markdown('Baseline-model')
+        #st.markdown('Baseline-model')
         fig = plt.figure(figsize = (6,6))  
         datafile = 'greece.jpg'
         img = plt.imread(datafile)
-        sns.scatterplot('Lon', 'Lat', data=X_test, hue='Prediction', zorder=1).set(title='Model')
+        
+        color_dict1 = dict({'Pass': '#1f77b4',
+                           'Fail': 'orange', 
+                                       })
+        
+        
+        sns.scatterplot('Lon', 'Lat', data=X_test, hue='Prediction', palette= color_dict1).set(title='Baseline')
         plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])      
 
         buf = BytesIO()
         fig.savefig(buf, format="png")
         st.image(buf)
-    with col2:   
-        st.markdown('Baseline-Ground Truth')
+    #with col2:   
+        
+        #st.markdown('Baseline-Ground Truth')
 
-        fig = plt.figure(figsize = (6,6))  
-        datafile = 'greece.jpg'
-        img = plt.imread(datafile)
+        #fig = plt.figure(figsize = (6,6))  
+        #datafile = 'greece.jpg'
+        #img = plt.imread(datafile)
+       # 
+        #sns.scatterplot('Lon', 'Lat', data=X_test, hue='Ground').set(title='Truth')
         #plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])
-        #plt.scatter(X_test['Lon'], X_test['Lat'], s=25, zorder = 1) #, c=X_test_crop['predict'].map(colors))
-        #plt.text(dfs['Lon']-0.2, dfs['Lat']+0.1, random_inst, fontsize = 12, color = "red")   
         
-        sns.scatterplot('Lon', 'Lat', data=X_test, hue='Ground', zorder = 1).set(title='Truth')
-        plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])
-        
-        buf = BytesIO()
-        fig.savefig(buf, format="png")
-        st.image(buf)
+        #buf = BytesIO()
+        #fig.savefig(buf, format="png")
+        #st.image(buf)
         
     if w4:
-        with col3:
-            st.markdown('Scenario-model')
+        with col2:
+            #st.markdown('Scenario-model')
 
             fig = plt.figure(figsize = (6,6))  
             #st.subheader("Scenario")
             scenario_exp = np.expand_dims(scenario, axis=0)
             
             X_test_vanilla = X_test_crop.copy() 
-           
+            #st.write(X_test_crop)
             X_test_crop.iloc[:,2] = X_test_crop.iloc[:,2]* (100+scenario[0])/100 # conductivity 
             X_test_crop.iloc[:,3] = X_test_crop.iloc[:,3]* (100+scenario[1])/100 # Nitrite
             X_test_crop.iloc[:,4] = X_test_crop.iloc[:,4]* (100+scenario[2])/100 # Nitrate
             X_test_crop.iloc[:,5] = X_test_crop.iloc[:,5]* (100+scenario[3])/100 # Ammonium
             X_test_crop.iloc[:,6] = X_test_crop.iloc[:,6]* (100+scenario[4])/100 # TP        
             X_test_crop.iloc[:,7] = X_test_crop.iloc[:,7]* (100+scenario[5])/100 # Salinity 
-            X_test_crop.iloc[:,8] = X_test_crop.iloc[:,8]* (100+scenario[6])/100 # Elevation
-            X_test_crop.iloc[:,9] = X_test_crop.iloc[:,9]* (100+scenario[7])/100 # Distance 
-            X_test_crop.iloc[:,10] = X_test_crop.iloc[:,10]* (100+scenario[8])/100 # Slope
+            X_test_crop.iloc[:,11] = X_test_crop.iloc[:,11]* (100+scenario[6])/100 # Prec
+            X_test_crop.iloc[:,12] = X_test_crop.iloc[:,12]* (100+scenario[7])/100 # Temp 
+           
             
             X_test_new_prediction = X_test_crop.copy()
             
             pred_new = model.predict(X_test_crop)
             X_test['New prediction'] = pred_new
+            X_test['After'] = pred_new
+            
+            idx = X_test.index[X_test['Before'] != X_test['After']]
+            
+            color_dict = dict({'Pass': '#1f77b4',
+                               'Fail': 'orange', 
+                               'Fail->Pass': 'green',
+                               'Pass->Fail': "red"})
+            
+            X_test['New prediction'][idx] = X_test['Before'][idx] - 2* X_test['After'][idx]
             
             X_test['New prediction'] = X_test['New prediction'].replace([0], 'Pass')
             X_test['New prediction'] = X_test['New prediction'].replace([1], 'Fail')
+            X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail')
+            X_test['New prediction'] = X_test['New prediction'].replace([-2], 'Pass->Fail')
+            X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail->Pass')
             
-            sns.scatterplot('Lon', 'Lat', data=X_test, hue='New prediction', zorder = 1).set(title='New prediction')
+            sns.scatterplot('Lon', 'Lat', data=X_test, hue='New prediction', palette= color_dict).set(title='Scenario')
             plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])
             
             buf = BytesIO()
             fig.savefig(buf, format="png")
             st.image(buf)
 
+        
 
-        st.markdown("Baseline values (4 first rows are shown)")
-        st.write(X_test_vanilla.head(4))  
+        col1, col2 = st.columns(2)
+        with col1:           
+            st.markdown("Baseline values (5 first rows are shown)")
+            d1 = X_test_vanilla[show_vars] 
+            #d1.round(4)
+            #st.write(d1)
+            st.dataframe(d1.head(5).set_index(d1.columns[0]))
+            #st.markdown(d1.head(5).style.hide(axis="index").to_html(), unsafe_allow_html=True)
+        with col2:
+            #st.write(X_test_vanilla[show_vars].head(5))  
+            st.markdown("Scenario values (5 first rows are shown)")
+            d2 = X_test_new_prediction[show_vars]
+            
+            st.dataframe(d2.head(5).set_index(d2.columns[0]))
 
-        st.markdown("Scenario values (4 first rows are shown)")
-        st.write(X_test_new_prediction.head(4))          
+
+new_york() 

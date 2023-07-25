@@ -11,3 +11,5 @@ joblib
 imblearn
 seaborn
 xgboost
+gmaps
+ipywidgets
