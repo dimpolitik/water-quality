@@ -334,7 +334,8 @@ if response not in '-':
                                        })
         
         
-        sns.scatterplot('Lon', 'Lat', data=X_test, hue='Prediction', palette= color_dict1).set(title='Baseline')
+        sns.scatterplot('Lon', 'Lat', data=X_test, hue='Prediction', palette= color_dict1)
+        plt.title('Baseline')
         plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])      
 
         buf = BytesIO()
