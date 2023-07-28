@@ -142,9 +142,9 @@ def load_model(response):
     elif response == 'Diat_QUALITY':
         xgb_model.load_model( 'xgb_Diat_QUALITY_classes_2.json')
     elif response == 'FISH_QUALITY':
-        xgb_model.load_model('xgb_Fish_QUALITY_classes_2.json')
+        xgb_model.load_model('xgb_Fish_QUALITY_classes_2n.json')
     elif response == 'Total Quality':
-        xgb_model.load_model('xgb_Total_QUALITY_classes_2.json')
+        xgb_model.load_model('xgb_Total_QUALITY_classes_2n.json')
     
     return xgb_model 
 
