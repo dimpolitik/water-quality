@@ -146,7 +146,7 @@ def load_model(response):
     elif response == 'Total Quality':
         xgb_model.load_model('xgb_Total_QUALITY_classes_2.json')
     
-    return xgb_model
+    return xgb_model 
 
 def new_york():
     # https://discuss.streamlit.io/t/how-to-show-gmaps-object-from-google-maps-api-on-streamlit/24588/5
