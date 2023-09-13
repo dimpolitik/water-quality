@@ -206,28 +206,39 @@ meteo_vars = ['Prec1']
 temp_vars = ['Temp1']
 
 var = var0 + meteo_vars + temp_vars
-
+url = "https://www.streamlit.io"
 ######################### Webpage set up ############################
 st.title('What-if-scenarios for predicting the ecological status of Greek rivers')
-st.markdown("In this study, we developed a series of classification models based on XGBoost for predicting the ecological status of Greek rivers by using  machine learning. Three  indices were tested, namely the MI quality (MiQ), Diatoms quality (DiQ) and fish quality (FiQ). Physico-chemical parameters reflecting both water quality and hydromorphological status, collected from several river sites in Greece, were used as explanatory variables for the algorithms.")
-
-st.markdown("The ecological status of the rivers was defined through three indices.")
+st.markdown("Monitoring the ecological status of rivers is essential for protecting freshwater \
+            biodiversity and ecosystem health. The Water Framework Directive (WFD) 2000/60/EC, which is the cornerstone \
+            of the European Union (EU)’s water policy, aims to mitigate the causes of  freshwater deterioration, and to \
+            restore or maintain a good ecological status of all European freshwaters. Authors et al., 2023 used a machine learning approach to predict the \
+            ecological status of Greek rivers through four quality elements that are benthic macroinvertebrates, \
+            benthic diatoms, fish and physicochemical quality. To do so, an extensive dataset that comprised ecological, \
+            physico-chemical, climate, geomorphological and sample-related parameters collected from the national \
+            monitoring network of rivers of Greece during 2018-2021 was used.")
+st.write("More details about the dataset and the adopted methodology can be found [here.](%s)" % url)
 
 ##st.markdown("<h1 style='text-align: center; color: white;'>My Streamlit App</h1>", unsafe_allow_html=True)
-
 #expander = st.expander("See workflow")
 #expander.image('workflow.JPG', caption='Sunrise by the mountains')
 
-st.markdown(" ")
+st.markdown("The present web interface predicts the ecological status of river sites through two classes (Fail vs. Pass). \
+            These classes have a more practical interpretation to explore if the ecological status of river sites meet \
+            the requirements of the WFD. \
+            The interface can simulate what-if scenarios by applying \
+            percentage changes to the input variables and forecasting the new quality status at \
+            a river location. For instance, if Nitrate was dropping by 20% and Conductivity \
+            was increasing by 30%, what would be the new ecological status of the river sites? \
+            The what-if-scenarios tool aims to look into how different scenarios might impact the \
+            models’ baseline forecast. By this way, it can help us assess the resilience of a \
+            river site to environmental changes, as well better understand which conditions could \
+            act as mitigation measures to restore the poor ecological status of specific river sites.")
 
-st.write("You can use this tool to predict the ecological status and answer what-if questions such as")
-st.markdown("- What if we reduce pH?")
-st.markdown("- Item 2")
-st.markdown("- Item 3")
 
 with st.form(key ='Form1'):
     with st.sidebar:
-        st.sidebar.image('urk-fishing-trawlers.jpg')
+        st.sidebar.image('pineios.png', width = 280) 
         st.sidebar.subheader("Select index")
         response = st.sidebar.selectbox("Ecological index", responses)
         
@@ -302,16 +313,16 @@ if response not in '-':
     st.subheader("Baseline and Scenario")
     
     if response == responses[1]:
-        st.write('<p style="font-size:18px; color:red;">Most influential factors for Macroinvertebrates are ???</p>',
+        st.write('<p style="font-size:16px; color:red;">Most influential factors for Macroinvertebrates index are Total Phosporus (TP), Elevation, Ammonium and Nitrate. </p>',
                                                                  unsafe_allow_html=True)
     elif response == responses[2]:
-        st.write('<p style="font-size:18px; color:red;">Most influential factors for Diatoms are ???</p>',
+        st.write('<p style="font-size:16px; color:red;">Most influential factors for Diatoms index are Total Phosporus (TP), Nitrate, Air temperature, and Season.</p>',
                                                                  unsafe_allow_html=True)
     elif response == responses[3]:
-       st.write('<p style="font-size:18px; color:red;">Most influential factors for Fish are ???</p>',
+       st.write('<p style="font-size:16px; color:red;">Most influential factors for Fish index are Slope, Elevation, Conducivity and Nitrate.</p>',
                                                                 unsafe_allow_html=True)
     elif response == responses[4]:
-        st.write('<p style="font-size:18px; color:red;">Most influential factors for Physicochemical quality are ???</p>',
+        st.write('<p style="font-size:16px; color:red;">Most influential factors for Physicochemical quality index are Total Phosporus (TP), Nitrite, Nitrate, Ammonium and Conductivity.</p>',
                                                                  unsafe_allow_html=True)
         
     col1, col2 = st.columns(2)
