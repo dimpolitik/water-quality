@@ -30,7 +30,7 @@ import streamlit.components.v1 as components
 
 # run app
 
-#streamlit run my_app_new.py
+#streamlit run myapp.py
 # https://dimpolitik-water-quality-myapp-yws3vl.streamlit.app/
 
 st.set_page_config(layout="wide")
@@ -206,7 +206,7 @@ meteo_vars = ['Prec1']
 temp_vars = ['Temp1']
 
 var = var0 + meteo_vars + temp_vars
-url = "https://www.streamlit.io"
+url = "https://docs.google.com/document/d/16cjVYvyMBRJvhqjqTdtPBDiTh9wSzY-JFJGsQsUUApo/edit?usp=sharing"
 ######################### Webpage set up ############################
 st.title('What-if-scenarios for predicting the ecological status of Greek rivers')
 st.markdown("Monitoring the ecological status of rivers is essential for protecting freshwater \
@@ -329,7 +329,7 @@ if response not in '-':
     with col1:
         #st.markdown('Baseline-model')
         fig = plt.figure(figsize = (6,6))  
-        datafile = 'greece.jpg'
+        datafile = 'greece_ecological_quality.png'
         img = plt.imread(datafile)
         
         color_dict1 = dict({'Pass': '#1f77b4',
@@ -337,8 +337,8 @@ if response not in '-':
                                        })
         
         sns.scatterplot(data=X_test, x='Lon', y='Lat', hue='Prediction', palette= color_dict1).set(title='Baseline')
-        plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])      
-
+        plt.imshow(img, zorder=0, extent=[19.25, 28.5, 34.5, 42])  
+        
         buf = BytesIO()
         fig.savefig(buf, format="png")
         st.image(buf)
@@ -399,7 +399,7 @@ if response not in '-':
             X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail-> Pass')
              
             sns.scatterplot(data=X_test, x='Lon', y='Lat', hue='New prediction', palette= color_dict2).set(title='Scenario')
-            plt.imshow(img, zorder=0, extent=[19.25, 28.1, 34.5, 42])
+            plt.imshow(img, zorder=0, extent=[19.25, 28.5, 34.5, 42])
             
             buf = BytesIO()
             fig.savefig(buf, format="png")
