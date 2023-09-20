@@ -209,6 +209,7 @@ var = var0 + meteo_vars + temp_vars
 url = "https://docs.google.com/document/d/16cjVYvyMBRJvhqjqTdtPBDiTh9wSzY-JFJGsQsUUApo/edit?usp=sharing"
 ######################### Webpage set up ############################
 st.title('What-if-scenarios for predicting the ecological status of Greek rivers')
+st.write('*Contributors: Dimitris Politikos (dimpolit@hcmr.gr), Kostas Stefanidis (kstefanidis@hcmr.gr), George Varlas (gvarlas@hcmr.gr)*')
 st.markdown("Monitoring the ecological status of rivers is essential for protecting freshwater \
             biodiversity and ecosystem health. The Water Framework Directive (WFD) 2000/60/EC, which is the cornerstone \
             of the European Union (EU)’s water policy, aims to mitigate the causes of  freshwater deterioration, and to \
