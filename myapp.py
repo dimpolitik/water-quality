@@ -206,14 +206,14 @@ meteo_vars = ['Prec1']
 temp_vars = ['Temp1']
 
 var = var0 + meteo_vars + temp_vars
-url = "https://docs.google.com/document/d/16cjVYvyMBRJvhqjqTdtPBDiTh9wSzY-JFJGsQsUUApo/edit?usp=sharing"
+url = "https://drive.google.com/file/d/1iumeQ-2gG2jnp-A4Fnp6pjfS2h1cnwjq/view?usp=sharing"
 ######################### Webpage set up ############################
 st.title('What-if-scenarios for predicting the ecological status of Greek rivers')
 st.write('*Contributors: Dimitris Politikos (dimpolit@hcmr.gr), Kostas Stefanidis (kstefanidis@hcmr.gr), George Varlas (gvarlas@hcmr.gr)*')
 st.markdown("Monitoring the ecological status of rivers is essential for protecting freshwater \
             biodiversity and ecosystem health. The Water Framework Directive (WFD) 2000/60/EC, which is the cornerstone \
             of the European Union (EU)’s water policy, aims to mitigate the causes of  freshwater deterioration, and to \
-            restore or maintain a good ecological status of all European freshwaters. Authors et al., 2023 used a machine learning approach to predict the \
+            restore or maintain a good ecological status of all European freshwaters. Politikos et al., 2023 used a machine learning approach to predict the \
             ecological status of Greek rivers through four quality elements that are benthic macroinvertebrates, \
             benthic diatoms, fish and physicochemical quality. To do so, an extensive dataset that comprised ecological, \
             physico-chemical, climate, geomorphological and sample-related parameters collected from the national \
