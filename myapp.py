@@ -213,7 +213,7 @@ st.write('*Contributors: Dimitris Politikos (dimpolit@hcmr.gr), Kostas Stefanidi
 st.markdown("Monitoring the ecological status of rivers is essential for protecting freshwater \
             biodiversity and ecosystem health. The Water Framework Directive (WFD) 2000/60/EC, which is the cornerstone \
             of the European Union (EU)’s water policy, aims to mitigate the causes of  freshwater deterioration, and to \
-            restore or maintain a good ecological status of all European freshwaters. Politikos et al., 2023 used a machine learning approach to predict the \
+            restore or maintain a good ecological status of all European freshwaters. The authors used a machine learning approach to predict the \
             ecological status of Greek rivers through four quality elements that are benthic macroinvertebrates, \
             benthic diatoms, fish and physicochemical quality. To do so, an extensive dataset that comprised ecological, \
             physico-chemical, climate, geomorphological and sample-related parameters collected from the national \
@@ -256,7 +256,6 @@ with st.form(key ='Form1'):
             model = load_model(response_back)
             df_tq, df_vanilla = preprocess_dataset(f, f_precip, f_temp, var, response_back, cs)
             
-            
             X_train, X_test, y_train, y_test, predictors, indices_train, indices_test, X_all, y_all, df_wiz = split_dataset(df_tq, response_back)
             
             X_train_crop = X_train.drop(['Lon', 'Lat'], axis=1)
@@ -284,16 +283,16 @@ with st.form(key ='Form1'):
             #slider.append(st.slider(‘Change variable value:’, s_min, s_max, default_cal,
             #key=“sld_%d” % var_number ))         
                          
-            i=3; var3 = st.slider(var[i], -100, 100, 0, 1, key='my_slider3')
-            i=4; var4 = st.slider(var[i], -100, 100, 0, 1, key='my_slider4')
-            i=5; var5 = st.slider(var[i], -100, 100, 0, 1, key='my_slider5')
-            i=6; var6 = st.slider(var[i], -100, 100, 0, 1, key='my_slider6')
-            i=7; var7 = st.slider(var[i], -100, 100, 0, 1, key='my_slider7')
+            i=3; var3 = st.slider(var[i], -50, 50, 0, 1, key='my_slider3')
+            i=4; var4 = st.slider(var[i], -50, 50, 0, 1, key='my_slider4')
+            i=5; var5 = st.slider(var[i], -50, 50, 0, 1, key='my_slider5')
+            i=6; var6 = st.slider(var[i], -50, 50, 0, 1, key='my_slider6')
+            i=7; var7 = st.slider(var[i], -50, 50, 0, 1, key='my_slider7')
           
-            i=9; var9 = st.slider(var[i], -100, 100, 0, 1, key='my_slider9')
+            i=9; var9 = st.slider(var[i], -50, 50, 0, 1, key='my_slider9')
             
-            i=14; var14 = st.slider(var[i], -100, 100, 0, 1, key='my_slider14')
-            i=15; var14 = st.slider(var[i], -100, 100, 0, 1, key='my_slider15')
+            i=14; var14 = st.slider('Precipitation', -50, 50, 0, 1, key='my_slider14')
+            i=15; var14 = st.slider('Temperature', -50, 50, 0, 1, key='my_slider15')
 
             scenario = np.array([
                                  st.session_state.my_slider3, 
@@ -360,23 +359,49 @@ if response not in '-':
         
     if w4:
         with col2:
-            #st.markdown('Scenario-model')
 
             fig = plt.figure(figsize = (6,6))  
-            #st.subheader("Scenario")
             scenario_exp = np.expand_dims(scenario, axis=0)
             
             X_test_vanilla = X_test_crop.copy() 
-            #st.write(X_test_crop)
-            X_test_crop.iloc[:,2] = X_test_crop.iloc[:,2]* (100+scenario[0])/100 # conductivity 
+             
+            
+            preds_max = X_test_crop.max()
+            preds_min = X_test_crop.min()
+            
+            X_test_crop.iloc[:,2] = X_test_crop.iloc[:,2]* (100+scenario[0])/100 # Conductivity 
             X_test_crop.iloc[:,3] = X_test_crop.iloc[:,3]* (100+scenario[1])/100 # Nitrite
             X_test_crop.iloc[:,4] = X_test_crop.iloc[:,4]* (100+scenario[2])/100 # Nitrate
             X_test_crop.iloc[:,5] = X_test_crop.iloc[:,5]* (100+scenario[3])/100 # Ammonium
             X_test_crop.iloc[:,6] = X_test_crop.iloc[:,6]* (100+scenario[4])/100 # TP        
             X_test_crop.iloc[:,7] = X_test_crop.iloc[:,7]* (100+scenario[5])/100 # Salinity 
-            X_test_crop.iloc[:,11] = X_test_crop.iloc[:,11]* (100+scenario[6])/100 # Prec
-            X_test_crop.iloc[:,12] = X_test_crop.iloc[:,12]* (100+scenario[7])/100 # Temp 
+            X_test_crop.iloc[:,11] = X_test_crop.iloc[:,11]* (100+scenario[6])/100 # Precipitation
+            X_test_crop.iloc[:,12] = X_test_crop.iloc[:,12]* (100+scenario[7])/100 # Temperature 
            
+            #X_test_max = X_test_crop.copy()
+            X_test_max = X_test_crop - preds_max #X_test_max.apply(lambda x: x - x.max()) 
+            
+            #st.write(preds_max)
+            #st.write(preds_min)
+            
+            #X_test_min = X_test_crop.copy()
+            X_test_min = X_test_crop - preds_min  #X_test_min.apply(lambda x: x - x.min()) 
+           
+            
+            Xmin = X_test_min.iloc[:, [2,3,4,5,6,7,11,12]]
+            Xmax = X_test_max.iloc[:, [2,3,4,5,6,7,11,12]]
+           
+            neg_values_exist = Xmin[(Xmin < -10).any(axis=1)]
+            pos_values_exist = Xmax[(Xmax > 10).any(axis=1)]
+            
+            above_max = list(pos_values_exist.index) 
+            below_min = list(neg_values_exist.index) 
+            
+            #st.write(above_max)
+            #st.write(below_min)
+            
+            m = above_max + below_min
+            m = list(set(m))
             
             X_test_new_prediction = X_test_crop.copy()
             
@@ -385,19 +410,30 @@ if response not in '-':
             X_test['After'] = pred_new
             
             idx = X_test.index[X_test['Before'] != X_test['After']]
-            
+                        
             color_dict2 = dict({'Pass': '#1f77b4',
                                'Fail': 'orange', 
-                               'Fail-> Pass': 'green',
-                               'Pass-> Fail': 'red'})
+                               'Fail-> Pass': 'aqua',
+                               'Pass-> Fail': 'red',
+                               'Out of range': 'brown' })
             
             X_test['New prediction'][idx] = X_test['Before'][idx] - 2* X_test['After'][idx]
             
-            X_test['New prediction'] = X_test['New prediction'].replace([0], 'Pass')
-            X_test['New prediction'] = X_test['New prediction'].replace([1], 'Fail')
-            X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail')
-            X_test['New prediction'] = X_test['New prediction'].replace([-2], 'Pass-> Fail')
-            X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail-> Pass')
+            if m:
+                X_test['New prediction'][m] = 999
+            
+                X_test['New prediction'] = X_test['New prediction'].replace([0], 'Pass')
+                X_test['New prediction'] = X_test['New prediction'].replace([1], 'Fail')
+                X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail')
+                X_test['New prediction'] = X_test['New prediction'].replace([-2], 'Pass-> Fail')
+                X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail-> Pass')
+                X_test['New prediction'] = X_test['New prediction'].replace([999], 'Out of range')
+            else:
+                X_test['New prediction'] = X_test['New prediction'].replace([0], 'Pass')
+                X_test['New prediction'] = X_test['New prediction'].replace([1], 'Fail')
+                X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail')
+                X_test['New prediction'] = X_test['New prediction'].replace([-2], 'Pass-> Fail')
+                X_test['New prediction'] = X_test['New prediction'].replace([2], 'Fail-> Pass')
              
             sns.scatterplot(data=X_test, x='Lon', y='Lat', hue='New prediction', palette= color_dict2).set(title='Scenario')
             plt.imshow(img, zorder=0, extent=[19.25, 28.5, 34.5, 42])
@@ -405,8 +441,6 @@ if response not in '-':
             buf = BytesIO()
             fig.savefig(buf, format="png")
             st.image(buf)
-
-        
 
         col1, col2 = st.columns(2)
         with col1:           
